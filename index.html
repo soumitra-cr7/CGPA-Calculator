@@ -15,20 +15,70 @@
       box-sizing: border-box;
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
-    .animate-slide-in {
-      animation: slideIn 0.3s ease-out;
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    @keyframes slideIn {
+    .grade-badge {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .grade-badge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .course-card {
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
+    }
+
+    .course-card:hover {
+      border-left-color: currentColor;
+      transform: translateX(4px);
+    }
+
+    .stat-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+    }
+
+    .floating-animation {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .slide-up {
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
       from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(30px);
       }
       to {
         opacity: 1;
@@ -36,8 +86,8 @@
       }
     }
 
-    .animate-fade-in {
-      animation: fadeIn 0.2s ease-in;
+    .fade-in {
+      animation: fadeIn 0.4s ease-in;
     }
 
     @keyframes fadeIn {
@@ -45,40 +95,104 @@
       to { opacity: 1; }
     }
 
-    .tooltip {
-      position: relative;
-    }
-
-    .tooltip:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 0.5rem 0.75rem;
-      background: #1f2937;
-      color: white;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      white-space: nowrap;
-      z-index: 50;
-      margin-bottom: 0.5rem;
-    }
-
-    .grade-select:focus {
+    input:focus, select:focus {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      transform: translateY(-1px);
     }
 
-    .export-modal {
-      backdrop-filter: blur(4px);
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .gpa-circle {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: conic-gradient(
+        from 0deg,
+        #a78bfa 0deg,
+        #c084fc calc(var(--progress) * 3.6deg),
+        #f3f4f6 calc(var(--progress) * 3.6deg)
+      );
+      margin: 0 auto;
+    }
+
+    .gpa-circle::before {
+      content: '';
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .gpa-number {
+      position: relative;
+      z-index: 1;
+    }
+
+    .delete-button {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .course-card:hover .delete-button,
+    .semester-header:hover .delete-button {
+      opacity: 1;
+    }
+
+    .modal-backdrop {
+      backdrop-filter: blur(8px);
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .modal-content {
+      animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .badge-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div id="app" class="h-full w-full"></div>
+  <div id="app" class="h-full w-full overflow-auto custom-scrollbar"></div>
   <script>
     // Grade policy configuration
     const GRADE_POLICY = {
@@ -101,14 +215,14 @@
       app_title: "CGPA Calculator",
       app_subtitle: "Track your academic progress semester by semester",
       add_course_button: "Add Course",
-      add_semester_button: "Add Semester",
-      export_button: "Export",
-      primary_color: "#3b82f6",
-      secondary_color: "#f3f4f6",
-      text_color: "#111827",
+      add_semester_button: "Add New Semester",
+      export_button: "Export Data",
+      primary_color: "#8b5cf6",
+      secondary_color: "#f0fdf4",
+      text_color: "#0f172a",
       surface_color: "#ffffff",
-      accent_color: "#10b981",
-      font_family: "Inter",
+      accent_color: "#06b6d4",
+      font_family: "Outfit",
       font_size: 16
     };
 
@@ -213,7 +327,7 @@
               course[field] = value === '' ? '' : numValue;
               delete state.errors[`${semesterId}-${courseId}-credits`];
             } else {
-              state.errors[`${semesterId}-${courseId}-credits`] = 'Please enter a valid credits value (> 0).';
+              state.errors[`${semesterId}-${courseId}-credits`] = 'Enter valid credits';
             }
           } else {
             course[field] = value;
@@ -248,6 +362,26 @@
     function deleteSemester(semesterId) {
       if (state.semesters.length > 1) {
         state.semesters = state.semesters.filter(s => s.id !== semesterId);
+        saveToStorage();
+        render();
+      }
+    }
+
+    function resetAll() {
+      if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+        state = {
+          semesters: [
+            {
+              id: 1,
+              name: "Semester 1",
+              courses: []
+            }
+          ],
+          nextSemesterId: 2,
+          nextCourseId: 1,
+          showExportModal: false,
+          errors: {}
+        };
         saveToStorage();
         render();
       }
@@ -304,18 +438,19 @@
         <head>
           <title>CGPA Transcript</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 40px; }
-            h1 { color: #1f2937; margin-bottom: 10px; }
-            .subtitle { color: #6b7280; margin-bottom: 30px; }
-            .cgpa-box { background: #eff6ff; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-            .cgpa-label { color: #1e40af; font-weight: 600; }
-            .cgpa-value { font-size: 36px; font-weight: 700; color: #1e40af; }
-            .semester { margin-bottom: 30px; page-break-inside: avoid; }
-            .semester-title { background: #f3f4f6; padding: 10px; font-weight: 600; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { padding: 8px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-            th { background: #f9fafb; font-weight: 600; color: #374151; }
-            .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; font-size: 12px; }
+            body { font-family: 'Outfit', Arial, sans-serif; padding: 40px; background: #f8fafc; }
+            h1 { color: #0f172a; margin-bottom: 10px; font-weight: 700; }
+            .subtitle { color: #64748b; margin-bottom: 30px; font-size: 18px; }
+            .cgpa-box { background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%); color: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; text-align: center; }
+            .cgpa-label { font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+            .cgpa-value { font-size: 48px; font-weight: 800; margin-top: 10px; }
+            .semester { margin-bottom: 30px; page-break-inside: avoid; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+            .semester-title { background: #f1f5f9; padding: 16px 20px; font-weight: 700; font-size: 18px; color: #0f172a; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { padding: 14px 20px; text-align: left; }
+            th { background: #fafafa; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+            tr:not(:last-child) td { border-bottom: 1px solid #f1f5f9; }
+            .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e2e8f0; color: #64748b; font-size: 12px; text-align: center; }
           </style>
         </head>
         <body>
@@ -331,7 +466,7 @@
         const semesterGPA = calculateSemesterGPA(semester.courses);
         html += `
           <div class="semester">
-            <div class="semester-title">${semester.name} ${semesterGPA ? `- GPA: ${semesterGPA.toFixed(2)}` : ''}</div>
+            <div class="semester-title">${semester.name} ${semesterGPA ? `• GPA: ${semesterGPA.toFixed(2)}` : ''}</div>
             <table>
               <thead>
                 <tr>
@@ -350,7 +485,7 @@
               <tr>
                 <td>${course.name || 'Unnamed Course'}</td>
                 <td>${course.credits}</td>
-                <td>${course.grade}</td>
+                <td><strong>${course.grade}</strong></td>
                 <td>${GRADE_POLICY[course.grade].toFixed(2)}</td>
               </tr>
             `;
@@ -366,7 +501,8 @@
 
       html += `
           <div class="footer">
-            Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}
+            Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}<br>
+            Designed by S & A
           </div>
         </body>
         </html>
@@ -388,7 +524,7 @@
         if (!file) return;
 
         const text = await file.text();
-        const rows = text.split('\n').slice(1); // Skip header
+        const rows = text.split('\n').slice(1);
         
         const newSemesters = new Map();
 
@@ -433,40 +569,49 @@
       const hasError = state.errors[errorKey];
 
       return `
-        <div class="animate-slide-in bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-            <div class="md:col-span-5">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Course Name</label>
+        <div class="course-card glass-effect rounded-xl p-5 slide-up" style="color: ${config.primary_color || defaultConfig.primary_color};">
+          <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+            <div class="flex-1 min-w-0">
+              <label class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.6; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.75}px;">Course Name</label>
               <input
                 type="text"
                 value="${course.name}"
-                placeholder="e.g., Calculus I (optional)"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                placeholder="e.g., Calculus I"
+                class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 transition-all"
+                style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.9375}px; font-weight: 500;"
                 onchange="updateCourse(${semester.id}, ${course.id}, 'name', this.value)"
+                onfocus="this.style.borderColor='${config.primary_color || defaultConfig.primary_color}'"
+                onblur="this.style.borderColor='#e5e7eb'"
               />
             </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Credits</label>
+            <div class="w-full md:w-32">
+              <label class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.6; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.75}px;">Credits</label>
               <input
                 type="number"
                 step="0.5"
                 min="0.5"
                 value="${course.credits}"
-                placeholder="e.g., 3"
-                class="w-full px-3 py-2 border ${hasError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                placeholder="3"
+                class="w-full px-4 py-3 rounded-lg border-2 ${hasError ? 'border-red-400' : 'border-gray-200'} transition-all"
+                style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.9375}px; font-weight: 600;"
                 onchange="updateCourse(${semester.id}, ${course.id}, 'credits', this.value)"
+                onfocus="this.style.borderColor='${config.primary_color || defaultConfig.primary_color}'"
+                onblur="this.style.borderColor='${hasError ? '#f87171' : '#e5e7eb'}'"
                 aria-invalid="${hasError ? 'true' : 'false'}"
               />
-              ${hasError ? `<p class="text-red-500 text-xs mt-1">${state.errors[errorKey]}</p>` : ''}
+              ${hasError ? `<p class="text-red-500 text-xs mt-1 font-medium">${state.errors[errorKey]}</p>` : ''}
             </div>
-            <div class="md:col-span-3">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Grade</label>
+            <div class="w-full md:w-40">
+              <label class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.6; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.75}px;">Grade</label>
               <select
-                class="grade-select w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 transition-all appearance-none cursor-pointer"
+                style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.9375}px; font-weight: 600; background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 fill=%22none%22 viewBox=%220 0 24 24%22 stroke=%22%236b7280%22%3E%3Cpath stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%222%22 d=%22M19 9l-7 7-7-7%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem;"
                 onchange="updateCourse(${semester.id}, ${course.id}, 'grade', this.value)"
-                aria-label="Grade (select)"
+                onfocus="this.style.borderColor='${config.primary_color || defaultConfig.primary_color}'"
+                onblur="this.style.borderColor='#e5e7eb'"
+                aria-label="Select grade"
               >
-                <option value="">Select grade</option>
+                <option value="">Select</option>
                 ${GRADE_OPTIONS.map(grade => `
                   <option value="${grade}" ${course.grade === grade ? 'selected' : ''}>
                     ${grade} (${GRADE_POLICY[grade].toFixed(2)})
@@ -474,15 +619,14 @@
                 `).join('')}
               </select>
             </div>
-            <div class="md:col-span-2 flex items-end">
-              <button
-                onclick="deleteCourse(${semester.id}, ${course.id})"
-                class="w-full md:w-auto px-4 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors font-medium"
-                aria-label="Delete course"
-              >
-                Delete
-              </button>
-            </div>
+            <button
+              onclick="deleteCourse(${semester.id}, ${course.id})"
+              class="delete-button md:mt-7 px-4 py-3 rounded-lg font-semibold transition-all hover:scale-105"
+              style="background-color: #fee2e2; color: #dc2626; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;"
+              aria-label="Delete course"
+            >
+              ✕
+            </button>
           </div>
         </div>
       `;
@@ -490,17 +634,16 @@
 
     function createSemesterPanel(semester, index) {
       const semesterGPA = calculateSemesterGPA(semester.courses);
-      const hasValidCourses = semester.courses.some(c => c.credits > 0 && c.grade);
 
       return `
-        <div class="bg-gray-50 rounded-xl p-6 shadow-sm border border-gray-200 animate-slide-in">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-              <h2 class="text-xl font-semibold" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.25}px;">
+        <div class="glass-effect rounded-2xl p-6 slide-up" style="animation-delay: ${index * 0.1}s;">
+          <div class="semester-header flex items-center justify-between mb-6">
+            <div class="flex items-center gap-4">
+              <h2 class="text-2xl font-bold" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.5}px;">
                 ${semester.name}
               </h2>
               ${semesterGPA ? `
-                <span class="tooltip px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold" data-tooltip="Exact: ${semesterGPA}">
+                <span class="grade-badge px-4 py-2 rounded-full font-bold text-sm shadow-md" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color} 0%, ${config.accent_color || defaultConfig.accent_color} 100%); color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
                   GPA: ${semesterGPA.toFixed(2)}
                 </span>
               ` : ''}
@@ -508,31 +651,36 @@
             ${state.semesters.length > 1 ? `
               <button
                 onclick="deleteSemester(${semester.id})"
-                class="px-3 py-1 text-red-600 hover:bg-red-50 rounded-md transition-colors text-sm font-medium"
+                class="delete-button px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105"
+                style="background-color: #fee2e2; color: #dc2626; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;"
                 aria-label="Delete semester"
               >
-                Delete Semester
+                Delete
               </button>
             ` : ''}
           </div>
 
-          <div class="space-y-3 mb-4">
+          <div class="space-y-4 mb-6">
             ${semester.courses.length > 0 ? 
               semester.courses.map(course => createCourseRow(semester, course)).join('') :
-              `<div class="text-center py-8 text-gray-500">
-                <p style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">No courses yet — click '${config.add_course_button || defaultConfig.add_course_button}' to start.</p>
+              `<div class="text-center py-16">
+                <div class="text-6xl mb-4">📚</div>
+                <p class="text-lg font-medium" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.5; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.125}px;">
+                  No courses yet
+                </p>
+                <p class="text-sm mt-2" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.4; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
+                  Click '${config.add_course_button || defaultConfig.add_course_button}' to start tracking
+                </p>
               </div>`
             }
           </div>
 
           <button
             onclick="addCourse(${semester.id})"
-            class="w-full py-2 rounded-md font-medium transition-all hover:shadow-md"
-            style="background-color: ${config.primary_color || defaultConfig.primary_color}; color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
-            onmouseover="this.style.opacity='0.9'"
-            onmouseout="this.style.opacity='1'"
+            class="w-full py-4 rounded-xl font-bold transition-all hover:scale-[1.02] hover:shadow-xl"
+            style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color} 0%, ${config.accent_color || defaultConfig.accent_color} 100%); color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
           >
-            ${config.add_course_button || defaultConfig.add_course_button}
+            + ${config.add_course_button || defaultConfig.add_course_button}
           </button>
         </div>
       `;
@@ -545,39 +693,52 @@
         return sum + s.courses.reduce((cSum, c) => c.credits > 0 && c.grade ? cSum + c.credits : cSum, 0);
       }, 0);
 
+      const progress = cgpa ? (cgpa / 4.0) * 100 : 0;
+
       return `
-        <div class="rounded-xl p-8 shadow-lg border border-gray-200 animate-fade-in" style="background-color: ${config.surface_color || defaultConfig.surface_color};">
-          <div class="text-center">
-            <h3 class="text-lg font-semibold mb-2" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.125}px;">
+        <div class="glass-effect rounded-2xl p-8 sticky top-8 fade-in">
+          <div class="text-center mb-8">
+            <h3 class="text-sm font-bold uppercase tracking-wider mb-6" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.6; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
               Cumulative CGPA
             </h3>
             ${cgpa ? `
-              <div class="tooltip" data-tooltip="Exact: ${cgpa}">
-                <div class="text-6xl font-bold mb-4" style="color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
-                  ${cgpa.toFixed(2)}
+              <div class="gpa-circle floating-animation" style="--progress: ${progress}">
+                <div class="gpa-number">
+                  <div class="text-5xl font-extrabold" style="color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+                    ${cgpa.toFixed(2)}
+                  </div>
+                  <div class="text-xs font-semibold mt-1" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.5; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.75}px;">
+                    OUT OF 4.00
+                  </div>
                 </div>
               </div>
             ` : `
-              <div class="text-4xl font-bold mb-4" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.3; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
-                N/A
+              <div class="py-12">
+                <div class="text-7xl font-extrabold" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.15; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+                  --
+                </div>
+                <p class="text-sm mt-4 font-medium" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.4; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
+                  Add courses to calculate
+                </p>
               </div>
             `}
-            <div class="grid grid-cols-2 gap-4 mt-6">
-              <div class="text-center p-4 rounded-lg" style="background-color: ${config.secondary_color || defaultConfig.secondary_color};">
-                <div class="text-2xl font-bold" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
-                  ${totalCourses}
-                </div>
-                <div class="text-sm" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.7; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
-                  Courses
-                </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="stat-card text-center p-5 rounded-xl" style="background: linear-gradient(135deg, ${config.secondary_color || defaultConfig.secondary_color} 0%, rgba(255,255,255,0.5) 100%);">
+              <div class="text-3xl font-extrabold mb-1" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+                ${totalCourses}
               </div>
-              <div class="text-center p-4 rounded-lg" style="background-color: ${config.secondary_color || defaultConfig.secondary_color};">
-                <div class="text-2xl font-bold" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
-                  ${totalCredits.toFixed(1)}
-                </div>
-                <div class="text-sm" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.7; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
-                  Credits
-                </div>
+              <div class="text-xs font-semibold uppercase tracking-wider" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.6; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.75}px;">
+                Courses
+              </div>
+            </div>
+            <div class="stat-card text-center p-5 rounded-xl" style="background: linear-gradient(135deg, ${config.secondary_color || defaultConfig.secondary_color} 0%, rgba(255,255,255,0.5) 100%);">
+              <div class="text-3xl font-extrabold mb-1" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+                ${totalCredits.toFixed(0)}
+              </div>
+              <div class="text-xs font-semibold uppercase tracking-wider" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.6; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.75}px;">
+                Credits
               </div>
             </div>
           </div>
@@ -589,54 +750,53 @@
       if (!state.showExportModal) return '';
 
       return `
-        <div class="export-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in" onclick="if(event.target === this) { state.showExportModal = false; render(); }">
-          <div class="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl" onclick="event.stopPropagation()">
-            <h3 class="text-xl font-bold mb-4" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.25}px;">
+        <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4" onclick="if(event.target === this) { state.showExportModal = false; render(); }">
+          <div class="modal-content glass-effect rounded-2xl p-8 max-w-md w-full shadow-2xl" onclick="event.stopPropagation()">
+            <h3 class="text-2xl font-bold mb-2" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.5}px;">
               Export Options
             </h3>
+            <p class="mb-6" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.6; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
+              Choose your preferred format
+            </p>
             <div class="space-y-3">
               <button
                 onclick="exportToCSV(); state.showExportModal = false; render();"
-                class="w-full py-3 px-4 rounded-lg font-medium transition-all hover:shadow-md text-left flex items-center gap-3"
-                style="background-color: ${config.primary_color || defaultConfig.primary_color}; color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
-                onmouseover="this.style.opacity='0.9'"
-                onmouseout="this.style.opacity='1'"
+                class="w-full py-4 px-6 rounded-xl font-bold transition-all hover:scale-[1.02] text-left flex items-center gap-4 shadow-lg hover:shadow-xl"
+                style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color} 0%, ${config.accent_color || defaultConfig.accent_color} 100%); color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
               >
-                <span>📄</span>
-                <div>
-                  <div>Export as CSV</div>
-                  <div class="text-sm opacity-80">Download spreadsheet file</div>
+                <span class="text-3xl">📊</span>
+                <div class="flex-1">
+                  <div class="font-bold">Export as CSV</div>
+                  <div class="text-sm opacity-80">Spreadsheet format</div>
                 </div>
               </button>
               <button
                 onclick="exportToPDF(); state.showExportModal = false; render();"
-                class="w-full py-3 px-4 rounded-lg font-medium transition-all hover:shadow-md text-left flex items-center gap-3"
+                class="w-full py-4 px-6 rounded-xl font-bold transition-all hover:scale-[1.02] text-left flex items-center gap-4 shadow-lg hover:shadow-xl"
                 style="background-color: ${config.accent_color || defaultConfig.accent_color}; color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
-                onmouseover="this.style.opacity='0.9'"
-                onmouseout="this.style.opacity='1'"
               >
-                <span>📑</span>
-                <div>
-                  <div>Export as PDF</div>
-                  <div class="text-sm opacity-80">Print or save as PDF</div>
+                <span class="text-3xl">📄</span>
+                <div class="flex-1">
+                  <div class="font-bold">Export as PDF</div>
+                  <div class="text-sm opacity-80">Print or save document</div>
                 </div>
               </button>
               <button
                 onclick="importFromCSV()"
-                class="w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-all text-left flex items-center gap-3"
-                style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+                class="w-full py-4 px-6 rounded-xl font-bold transition-all hover:scale-[1.02] text-left flex items-center gap-4"
+                style="background-color: ${config.secondary_color || defaultConfig.secondary_color}; color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
               >
-                <span>📥</span>
-                <div>
-                  <div>Import from CSV</div>
-                  <div class="text-sm opacity-70">Load existing transcript</div>
+                <span class="text-3xl">📥</span>
+                <div class="flex-1">
+                  <div class="font-bold">Import CSV</div>
+                  <div class="text-sm opacity-70">Load existing data</div>
                 </div>
               </button>
             </div>
             <button
               onclick="state.showExportModal = false; render();"
-              class="w-full mt-4 py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors"
-              style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+              class="w-full mt-4 py-3 px-6 rounded-xl font-semibold transition-all hover:bg-gray-200"
+              style="background-color: #f1f5f9; color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
             >
               Cancel
             </button>
@@ -648,60 +808,63 @@
     function render() {
       const app = document.getElementById('app');
       app.innerHTML = `
-        <div class="min-h-full w-full" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
-          <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="min-h-full w-full" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+          <div class="max-w-7xl mx-auto px-4 py-12">
             <!-- Header -->
-            <div class="text-center mb-8">
-              <h1 class="text-4xl font-bold text-white mb-2" style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 2.5}px;">
+            <div class="text-center mb-12">
+              <h1 class="text-5xl md:text-6xl font-extrabold text-white mb-3 tracking-tight" style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 3}px; text-shadow: 0 4px 20px rgba(0,0,0,0.2);">
                 ${config.app_title || defaultConfig.app_title}
               </h1>
-              <p class="text-blue-100" style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.125}px;">
+              <p class="text-xl text-white" style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.25}px; opacity: 0.9;">
                 ${config.app_subtitle || defaultConfig.app_subtitle}
               </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <!-- Main Content -->
-              <div class="lg:col-span-2 space-y-6">
+              <main class="lg:col-span-2 space-y-6">
                 ${state.semesters.map((semester, index) => createSemesterPanel(semester, index)).join('')}
                 
-                <div class="flex gap-3">
+                <div class="flex flex-col sm:flex-row gap-4">
                   <button
                     onclick="addSemester()"
-                    class="flex-1 py-3 rounded-lg font-medium transition-all hover:shadow-lg"
+                    class="flex-1 py-4 rounded-xl font-bold transition-all hover:scale-[1.02] hover:shadow-xl"
                     style="background-color: ${config.surface_color || defaultConfig.surface_color}; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
                   >
-                    ${config.add_semester_button || defaultConfig.add_semester_button}
+                    + ${config.add_semester_button || defaultConfig.add_semester_button}
                   </button>
                   <button
                     onclick="state.showExportModal = true; render();"
-                    class="px-6 py-3 rounded-lg font-medium transition-all hover:shadow-lg"
+                    class="sm:w-48 py-4 rounded-xl font-bold transition-all hover:scale-[1.02] shadow-lg hover:shadow-xl"
                     style="background-color: ${config.accent_color || defaultConfig.accent_color}; color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
-                    onmouseover="this.style.opacity='0.9'"
-                    onmouseout="this.style.opacity='1'"
                   >
-                    ${config.export_button || defaultConfig.export_button}
+                    📤 ${config.export_button || defaultConfig.export_button}
+                  </button>
+                  <button
+                    onclick="resetAll()"
+                    class="sm:w-48 py-4 rounded-xl font-bold transition-all hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                    style="background-color: #fee2e2; color: #dc2626; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+                  >
+                    🔄 Reset All
                   </button>
                 </div>
-              </div>
+              </main>
 
               <!-- Sidebar -->
-              <div class="lg:col-span-1">
-                <div class="sticky top-8">
-                  ${createResultsCard()}
-                </div>
-              </div>
+              <aside class="lg:col-span-1">
+                ${createResultsCard()}
+              </aside>
             </div>
           </div>
 
           ${createExportModal()}
 
-          <!-- Footer Credit -->
-          <div class="text-center py-6">
-            <p class="text-white text-sm opacity-75" style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
+          <!-- Footer -->
+          <footer class="text-center py-8">
+            <p class="text-white text-sm font-medium" style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px; opacity: 0.8;">
               Designed by S & A
             </p>
-          </div>
+          </footer>
         </div>
       `;
     }
@@ -793,5 +956,5 @@
     loadFromStorage();
     render();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9be006b3443525b1',t:'MTc2ODQyNDA0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9be01ae735a1f257',t:'MTc2ODQyNDg2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
