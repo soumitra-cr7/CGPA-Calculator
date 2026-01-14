@@ -6,875 +6,792 @@
   <title>CGPA Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
   <style>
     body {
       box-sizing: border-box;
     }
     
     * {
-      font-family: 'Space Grotesk', sans-serif;
+      box-sizing: border-box;
     }
-    
-    .mono {
-      font-family: 'JetBrains Mono', monospace;
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
-    
-    .gradient-bg {
-      background: #ffffff;
+
+    .animate-slide-in {
+      animation: slideIn 0.3s ease-out;
     }
-    
-    .card-glass {
-      background: rgba(248, 250, 252, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-    }
-    
-    .glow-border {
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-    }
-    
-    .semester-card {
-      background: linear-gradient(145deg, rgba(248, 250, 252, 1), rgba(241, 245, 249, 1));
-      border: 1px solid rgba(99, 102, 241, 0.3);
-    }
-    
-    .course-row {
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-    }
-    
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-    }
-    
-    .btn-danger {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    }
-    
-    .btn-danger:hover {
-      background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
-    }
-    
-    .input-field {
-      background: rgba(255, 255, 255, 1);
-      border: 1px solid rgba(203, 213, 225, 0.8);
-      color: #1e293b;
-    }
-    
-    .input-field:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-    }
-    
-    .stats-card {
-      background: linear-gradient(145deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.04));
-      border: 1px solid rgba(99, 102, 241, 0.3);
-    }
-    
-    .cgpa-display {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #6366f1 100%);
-      background-size: 200% 200%;
-      animation: gradientShift 3s ease infinite;
-    }
-    
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-    
-    .fade-in {
-      animation: fadeIn 0.3s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    select option {
-      background: #ffffff;
-      color: #1e293b;
-    }
-    
-    .toast {
-      animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
-    }
-    
+
     @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    
-    @keyframes slideOut {
-      from { transform: translateX(0); opacity: 1; }
-      to { transform: translateX(100%); opacity: 0; }
+
+    .animate-fade-in {
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .tooltip {
+      position: relative;
+    }
+
+    .tooltip:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.5rem 0.75rem;
+      background: #1f2937;
+      color: white;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      z-index: 50;
+      margin-bottom: 0.5rem;
+    }
+
+    .grade-select:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .export-modal {
+      backdrop-filter: blur(4px);
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="h-full gradient-bg text-slate-800 overflow-auto">
-  <div id="app-wrapper" class="min-h-full w-full"><!-- Toast Container -->
-   <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div><!-- Header -->
-   <header class="py-8 px-4 text-center">
-    <h1 id="app-title" class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent mb-2">CGPA Calculator</h1>
-    <p id="app-subtitle" class="text-slate-600 text-lg">Calculate your academic performance accurately</p>
-   </header><!-- Overall Stats -->
-   <div class="max-w-6xl mx-auto px-4 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-     <div class="stats-card clickable rounded-2xl p-6 text-center glow-border">
-      <div class="text-slate-600 text-sm uppercase tracking-wider mb-2">
-       Total Credits
-      </div>
-      <div id="total-credits" class="mono text-3xl font-bold text-indigo-400">
-       0
-      </div>
-     </div>
-     <div class="cgpa-display clickable rounded-2xl p-6 text-center glow-border">
-      <div class="text-white/80 text-sm uppercase tracking-wider mb-2">
-       Overall CGPA
-      </div>
-      <div id="overall-cgpa" class="mono text-4xl font-bold text-white">
-       0.00
-      </div>
-     </div>
-     <div class="stats-card clickable rounded-2xl p-6 text-center glow-border">
-      <div class="text-slate-600 text-sm uppercase tracking-wider mb-2">
-       Total Semesters
-      </div>
-      <div id="total-semesters" class="mono text-3xl font-bold text-indigo-400">
-       0
-      </div>
-     </div>
-    </div>
-   </div><!-- Add Semester Button -->
-   <div class="max-w-6xl mx-auto px-4 mb-6">
-    <div class="flex flex-wrap gap-3"><button id="add-semester-btn" class="btn-primary px-6 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all duration-300">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-      </svg> Add New Semester </button> <button id="clear-all-btn" class="btn-danger px-6 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all duration-300 hidden">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-      </svg> Clear All Data </button>
-    </div>
-   </div><!-- Clear All Confirmation Modal -->
-   <div id="clear-all-modal" class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden">
-    <div class="card-glass rounded-2xl p-8 max-w-md mx-4 glow-border">
-     <div class="text-center mb-6">
-      <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-       <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-       </svg>
-      </div>
-      <h3 class="text-2xl font-bold text-slate-800 mb-2">Clear All Data?</h3>
-      <p class="text-slate-600">This will permanently delete all semesters and courses. This action cannot be undone.</p>
-     </div>
-     <div class="flex gap-3"><button id="confirm-clear-all-btn" class="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-all">Yes, Clear All</button> <button id="cancel-clear-all-btn" class="flex-1 py-3 rounded-xl bg-slate-600 hover:bg-slate-700 text-white font-semibold transition-all">Cancel</button>
-     </div>
-    </div>
-   </div><!-- Semesters Container -->
-   <div id="semesters-container" class="max-w-6xl mx-auto px-4 pb-8 space-y-6"><!-- Semesters will be rendered here -->
-   </div><!-- Empty State -->
-   <div id="empty-state" class="max-w-6xl mx-auto px-4 pb-8">
-    <div class="card-glass rounded-2xl p-12 text-center glow-border">
-     <svg class="w-16 h-16 mx-auto mb-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-     </svg>
-     <h3 class="text-xl font-semibold text-slate-700 mb-2">Getting Started</h3>
-     <p class="text-slate-600">Semester 1 is ready for you! Add courses to begin calculating your CGPA</p>
-    </div>
-   </div><!-- Footer -->
-   <footer class="max-w-6xl mx-auto px-4 py-8 text-center">
-    <div class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20">
-     <p class="text-slate-600 text-sm">Design by <span class="text-indigo-400 font-semibold">S &amp; A</span></p>
-    </div>
-   </footer><!-- Loading Overlay -->
-   <div id="loading-overlay" class="fixed inset-0 bg-white/95 flex items-center justify-center z-50 hidden">
-    <div class="flex flex-col items-center gap-4">
-     <div class="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div><span class="text-slate-700">Processing...</span>
-    </div>
-   </div>
-  </div>
+ <body class="h-full">
+  <div id="app" class="h-full w-full"></div>
   <script>
-    // Grade Points Mapping
-    const gradePoints = {
-      'A+': 4.00, 'A': 3.75, 'A-': 3.50,
-      'B+': 3.25, 'B': 3.00, 'B-': 2.75,
-      'C+': 2.50, 'C': 2.25,
+    // Grade policy configuration
+    const GRADE_POLICY = {
+      'A+': 4.00,
+      'A': 3.75,
+      'A-': 3.50,
+      'B+': 3.25,
+      'B': 3.00,
+      'B-': 2.75,
+      'C+': 2.50,
+      'C': 2.25,
       'D': 2.00,
       'F': 0.00
     };
-    
-    // Default Configuration
+
+    const GRADE_OPTIONS = Object.keys(GRADE_POLICY);
+
+    // Default configuration
     const defaultConfig = {
-      app_title: 'CGPA Calculator',
-      subtitle: 'Calculate your academic performance accurately',
-      background_color: '#ffffff',
-      surface_color: '#f8fafc',
-      text_color: '#1e293b',
-      primary_action: '#6366f1',
-      secondary_action: '#64748b',
-      font_family: 'Space Grotesk',
+      app_title: "CGPA Calculator",
+      app_subtitle: "Track your academic progress semester by semester",
+      add_course_button: "Add Course",
+      add_semester_button: "Add Semester",
+      export_button: "Export",
+      primary_color: "#3b82f6",
+      secondary_color: "#f3f4f6",
+      text_color: "#111827",
+      surface_color: "#ffffff",
+      accent_color: "#10b981",
+      font_family: "Inter",
       font_size: 16
     };
-    
-    // State
-    let allCourses = [];
-    let semesters = new Map();
-    let isLoading = false;
-    
-    // Utility Functions
-    function generateId() {
-      return Date.now().toString(36) + Math.random().toString(36).substr(2);
-    }
-    
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = `toast px-4 py-3 rounded-lg shadow-lg ${type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white font-medium`;
-      toast.textContent = message;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    }
-    
-    function showLoading(show) {
-      isLoading = show;
-      document.getElementById('loading-overlay').classList.toggle('hidden', !show);
-    }
-    
-    function getGradePoint(grade) {
-      if (gradePoints.hasOwnProperty(grade)) {
-        return gradePoints[grade];
+
+    let config = { ...defaultConfig };
+
+    // State management
+    let state = {
+      semesters: [
+        {
+          id: 1,
+          name: "Semester 1",
+          courses: []
+        }
+      ],
+      nextSemesterId: 2,
+      nextCourseId: 1,
+      showExportModal: false,
+      errors: {}
+    };
+
+    // Load from localStorage
+    function loadFromStorage() {
+      try {
+        const saved = localStorage.getItem('cgpa-calculator-data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state.semesters = parsed.semesters || state.semesters;
+          state.nextSemesterId = parsed.nextSemesterId || state.nextSemesterId;
+          state.nextCourseId = parsed.nextCourseId || state.nextCourseId;
+        }
+      } catch (e) {
+        console.error('Failed to load from storage:', e);
       }
-      const numericGrade = parseFloat(grade);
-      if (!isNaN(numericGrade) && numericGrade >= 0 && numericGrade <= 4) {
-        return numericGrade;
-      }
-      return 0;
     }
-    
-    // CGPA Calculation Functions - Credit-Weighted Average Method
-    function calculateSemesterCGPA(courses) {
-      if (courses.length === 0) return { cgpa: 0, totalCredits: 0 };
-      
-      let totalWeightedPoints = 0;
+
+    // Save to localStorage
+    function saveToStorage() {
+      try {
+        localStorage.setItem('cgpa-calculator-data', JSON.stringify({
+          semesters: state.semesters,
+          nextSemesterId: state.nextSemesterId,
+          nextCourseId: state.nextCourseId
+        }));
+      } catch (e) {
+        console.error('Failed to save to storage:', e);
+      }
+    }
+
+    // Calculation functions
+    function calculateSemesterGPA(courses) {
+      const validCourses = courses.filter(c => c.credits > 0 && c.grade);
+      if (validCourses.length === 0) return null;
+
+      const totalPoints = validCourses.reduce((sum, course) => {
+        return sum + (GRADE_POLICY[course.grade] * course.credits);
+      }, 0);
+
+      const totalCredits = validCourses.reduce((sum, course) => sum + course.credits, 0);
+
+      return totalCredits > 0 ? totalPoints / totalCredits : null;
+    }
+
+    function calculateCGPA() {
+      let totalPoints = 0;
       let totalCredits = 0;
-      
-      courses.forEach(course => {
-        // Only include courses with valid grades and credits
-        if (course.grade && course.grade !== '') {
-          const gradePoint = getGradePoint(course.grade);
-          const credits = parseFloat(course.credit_hours) || 0;
-          
-          // Only include if credits > 0
-          if (credits > 0) {
-            totalWeightedPoints += gradePoint * credits;
-            totalCredits += credits;
+
+      state.semesters.forEach(semester => {
+        semester.courses.forEach(course => {
+          if (course.credits > 0 && course.grade) {
+            totalPoints += GRADE_POLICY[course.grade] * course.credits;
+            totalCredits += course.credits;
           }
-        }
+        });
       });
-      
-      // CGPA = Sum(Grade Point × Credits) ÷ Sum(Credits)
-      const cgpa = totalCredits > 0 ? totalWeightedPoints / totalCredits : 0;
-      return { cgpa: Math.round(cgpa * 100) / 100, totalCredits };
+
+      return totalCredits > 0 ? totalPoints / totalCredits : null;
     }
-    
-    function calculateOverallCGPA(allCourses) {
-      if (allCourses.length === 0) return { cgpa: 0, totalCredits: 0 };
-      
-      let totalWeightedPoints = 0;
-      let totalCredits = 0;
-      
-      allCourses.forEach(course => {
-        // Only include courses with valid grades and credits
-        if (course.grade && course.grade !== '') {
-          const gradePoint = getGradePoint(course.grade);
-          const credits = parseFloat(course.credit_hours) || 0;
-          
-          // Only include if credits > 0
-          if (credits > 0) {
-            totalWeightedPoints += gradePoint * credits;
-            totalCredits += credits;
-          }
-        }
-      });
-      
-      // Overall CGPA = Sum(Grade Point × Credits for ALL courses) ÷ Sum(ALL Credits)
-      // This ensures weighted average, NOT averaging of semester CGPAs
-      const cgpa = totalCredits > 0 ? totalWeightedPoints / totalCredits : 0;
-      return { cgpa: Math.round(cgpa * 100) / 100, totalCredits };
-    }
-    
-    // UI Update Functions
-    function updateOverallStats() {
-      const { cgpa, totalCredits } = calculateOverallCGPA(allCourses);
-      const uniqueSemesters = new Set(allCourses.map(c => c.semester_id));
-      
-      document.getElementById('overall-cgpa').textContent = cgpa.toFixed(2);
-      document.getElementById('total-credits').textContent = totalCredits;
-      document.getElementById('total-semesters').textContent = uniqueSemesters.size;
-      
-      const emptyState = document.getElementById('empty-state');
-      const semestersContainer = document.getElementById('semesters-container');
-      const clearAllBtn = document.getElementById('clear-all-btn');
-      
-      if (uniqueSemesters.size === 0) {
-        emptyState.classList.remove('hidden');
-        semestersContainer.classList.add('hidden');
-        clearAllBtn.classList.add('hidden');
-      } else {
-        emptyState.classList.add('hidden');
-        semestersContainer.classList.remove('hidden');
-        clearAllBtn.classList.remove('hidden');
+
+    // Course management
+    function addCourse(semesterId) {
+      const semester = state.semesters.find(s => s.id === semesterId);
+      if (semester) {
+        semester.courses.push({
+          id: state.nextCourseId++,
+          name: '',
+          credits: '',
+          grade: ''
+        });
+        saveToStorage();
+        render();
       }
     }
-    
-    function renderSemesters() {
-      const container = document.getElementById('semesters-container');
-      
-      // Group courses by semester
-      semesters.clear();
-      allCourses.forEach(course => {
-        if (!semesters.has(course.semester_id)) {
-          semesters.set(course.semester_id, {
-            id: course.semester_id,
-            name: course.semester_name,
-            courses: []
-          });
+
+    function updateCourse(semesterId, courseId, field, value) {
+      const semester = state.semesters.find(s => s.id === semesterId);
+      if (semester) {
+        const course = semester.courses.find(c => c.id === courseId);
+        if (course) {
+          if (field === 'credits') {
+            const numValue = parseFloat(value);
+            if (value === '' || (!isNaN(numValue) && numValue > 0)) {
+              course[field] = value === '' ? '' : numValue;
+              delete state.errors[`${semesterId}-${courseId}-credits`];
+            } else {
+              state.errors[`${semesterId}-${courseId}-credits`] = 'Please enter a valid credits value (> 0).';
+            }
+          } else {
+            course[field] = value;
+          }
+          saveToStorage();
+          render();
         }
-        semesters.get(course.semester_id).courses.push(course);
-      });
-      
-      // Sort semesters by creation time
-      const sortedSemesters = Array.from(semesters.values()).sort((a, b) => {
-        const aTime = a.courses[0]?.created_at || '';
-        const bTime = b.courses[0]?.created_at || '';
-        return aTime.localeCompare(bTime);
-      });
-      
-      // Update or create semester cards
-      const existingCards = new Map([...container.children].map(el => [el.dataset.semesterId, el]));
-      
-      sortedSemesters.forEach(semester => {
-        const { cgpa, totalCredits } = calculateSemesterCGPA(semester.courses);
-        
-        if (existingCards.has(semester.id)) {
-          // Update existing card
-          const card = existingCards.get(semester.id);
-          updateSemesterCard(card, semester, cgpa, totalCredits);
-          existingCards.delete(semester.id);
-        } else {
-          // Create new card
-          const card = createSemesterCard(semester, cgpa, totalCredits);
-          container.appendChild(card);
-        }
-      });
-      
-      // Remove deleted semesters
-      existingCards.forEach(card => card.remove());
-      
-      updateOverallStats();
+      }
     }
-    
-    function createSemesterCard(semester, cgpa, totalCredits) {
-      const card = document.createElement('div');
-      card.className = 'semester-card rounded-2xl p-6 glow-border fade-in';
-      card.dataset.semesterId = semester.id;
+
+    function deleteCourse(semesterId, courseId) {
+      const semester = state.semesters.find(s => s.id === semesterId);
+      if (semester) {
+        semester.courses = semester.courses.filter(c => c.id !== courseId);
+        delete state.errors[`${semesterId}-${courseId}-credits`];
+        saveToStorage();
+        render();
+      }
+    }
+
+    // Semester management
+    function addSemester() {
+      state.semesters.push({
+        id: state.nextSemesterId++,
+        name: `Semester ${state.semesters.length + 1}`,
+        courses: []
+      });
+      saveToStorage();
+      render();
+    }
+
+    function deleteSemester(semesterId) {
+      if (state.semesters.length > 1) {
+        state.semesters = state.semesters.filter(s => s.id !== semesterId);
+        saveToStorage();
+        render();
+      }
+    }
+
+    // Export functionality
+    function exportToCSV() {
+      const rows = [
+        ['Semester', 'Course', 'Credits', 'Grade', 'GradeValue', 'SemesterGPA', 'CumulativeCGPA']
+      ];
+
+      let cumulativePoints = 0;
+      let cumulativeCredits = 0;
+
+      state.semesters.forEach(semester => {
+        const semesterGPA = calculateSemesterGPA(semester.courses);
+        
+        semester.courses.forEach(course => {
+          if (course.credits > 0 && course.grade) {
+            cumulativePoints += GRADE_POLICY[course.grade] * course.credits;
+            cumulativeCredits += course.credits;
+            const cgpa = cumulativeCredits > 0 ? (cumulativePoints / cumulativeCredits).toFixed(2) : '';
+
+            rows.push([
+              semester.name,
+              course.name || 'Unnamed Course',
+              course.credits,
+              course.grade,
+              GRADE_POLICY[course.grade],
+              semesterGPA ? semesterGPA.toFixed(2) : '',
+              cgpa
+            ]);
+          }
+        });
+      });
+
+      const csv = rows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cgpa-transcript.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportToPDF() {
+      const printWindow = window.open('', '_blank');
+      const cgpa = calculateCGPA();
       
-      card.innerHTML = `
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div class="flex items-center gap-4">
-            <input type="text" 
-                   class="semester-name-input input-field px-4 py-2 rounded-lg text-xl font-semibold text-slate-800 bg-transparent border-transparent focus:border-indigo-500 outline-none transition-all ${semester.name === 'Semester 1' ? 'pointer-events-none' : ''}"
-                   value="${escapeHtml(semester.name)}"
-                   placeholder="Semester Name"
-                   ${semester.name === 'Semester 1' ? 'readonly' : ''}>
+      let html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>CGPA Transcript</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 40px; }
+            h1 { color: #1f2937; margin-bottom: 10px; }
+            .subtitle { color: #6b7280; margin-bottom: 30px; }
+            .cgpa-box { background: #eff6ff; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+            .cgpa-label { color: #1e40af; font-weight: 600; }
+            .cgpa-value { font-size: 36px; font-weight: 700; color: #1e40af; }
+            .semester { margin-bottom: 30px; page-break-inside: avoid; }
+            .semester-title { background: #f3f4f6; padding: 10px; font-weight: 600; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { padding: 8px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+            th { background: #f9fafb; font-weight: 600; color: #374151; }
+            .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <h1>${config.app_title || defaultConfig.app_title}</h1>
+          <div class="subtitle">${config.app_subtitle || defaultConfig.app_subtitle}</div>
+          <div class="cgpa-box">
+            <div class="cgpa-label">Cumulative CGPA</div>
+            <div class="cgpa-value">${cgpa ? cgpa.toFixed(2) : 'N/A'}</div>
           </div>
-          <div class="flex items-center gap-4">
-            <div class="text-right">
-              <div class="text-slate-600 text-xs uppercase tracking-wider">Semester CGPA</div>
-              <div class="semester-cgpa mono text-2xl font-bold text-indigo-400">${cgpa.toFixed(2)}</div>
-            </div>
-            <div class="text-right">
-              <div class="text-slate-600 text-xs uppercase tracking-wider">Credits</div>
-              <div class="semester-credits mono text-2xl font-bold text-slate-700">${totalCredits}</div>
-            </div>
-            <button class="delete-semester-btn p-2 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 transition-all ${semester.name === 'Semester 1' ? 'invisible pointer-events-none' : ''}" title="Delete Semester">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-              </svg>
-            </button>
+      `;
+
+      state.semesters.forEach(semester => {
+        const semesterGPA = calculateSemesterGPA(semester.courses);
+        html += `
+          <div class="semester">
+            <div class="semester-title">${semester.name} ${semesterGPA ? `- GPA: ${semesterGPA.toFixed(2)}` : ''}</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Credits</th>
+                  <th>Grade</th>
+                  <th>Grade Value</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+
+        semester.courses.forEach(course => {
+          if (course.credits > 0 && course.grade) {
+            html += `
+              <tr>
+                <td>${course.name || 'Unnamed Course'}</td>
+                <td>${course.credits}</td>
+                <td>${course.grade}</td>
+                <td>${GRADE_POLICY[course.grade].toFixed(2)}</td>
+              </tr>
+            `;
+          }
+        });
+
+        html += `
+              </tbody>
+            </table>
           </div>
-        </div>
+        `;
+      });
+
+      html += `
+          <div class="footer">
+            Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}
+          </div>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(html);
+      printWindow.document.close();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+
+    function importFromCSV() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.csv';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const text = await file.text();
+        const rows = text.split('\n').slice(1); // Skip header
         
-        <div class="courses-container space-y-3 mb-4">
-          ${semester.courses.map(course => createCourseRowHTML(course)).join('')}
-        </div>
-        
-        <button class="add-course-btn w-full py-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-indigo-500 text-slate-600 hover:text-indigo-600 transition-all flex items-center justify-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-          </svg>
-          Add Course
-        </button>
-        
-        <div class="delete-confirm hidden mt-4 p-4 bg-red-500/20 rounded-xl border border-red-500/30">
-          <p class="text-red-300 mb-3">Delete this semester and all its courses?</p>
-          <div class="flex gap-3">
-            <button class="confirm-delete-btn flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition-all">Yes, Delete</button>
-            <button class="cancel-delete-btn flex-1 py-2 rounded-lg bg-slate-600 hover:bg-slate-700 text-white font-medium transition-all">Cancel</button>
+        const newSemesters = new Map();
+
+        rows.forEach(row => {
+          const cols = row.split(',').map(col => col.replace(/^"|"$/g, '').trim());
+          if (cols.length >= 5 && cols[0]) {
+            const [semesterName, courseName, credits, grade] = cols;
+            
+            if (!newSemesters.has(semesterName)) {
+              newSemesters.set(semesterName, {
+                id: state.nextSemesterId++,
+                name: semesterName,
+                courses: []
+              });
+            }
+
+            const creditsNum = parseFloat(credits);
+            if (!isNaN(creditsNum) && creditsNum > 0 && GRADE_POLICY[grade] !== undefined) {
+              newSemesters.get(semesterName).courses.push({
+                id: state.nextCourseId++,
+                name: courseName,
+                credits: creditsNum,
+                grade: grade
+              });
+            }
+          }
+        });
+
+        if (newSemesters.size > 0) {
+          state.semesters = Array.from(newSemesters.values());
+          saveToStorage();
+          render();
+          state.showExportModal = false;
+        }
+      };
+      input.click();
+    }
+
+    // Render functions
+    function createCourseRow(semester, course) {
+      const errorKey = `${semester.id}-${course.id}-credits`;
+      const hasError = state.errors[errorKey];
+
+      return `
+        <div class="animate-slide-in bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+            <div class="md:col-span-5">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Course Name</label>
+              <input
+                type="text"
+                value="${course.name}"
+                placeholder="e.g., Calculus I (optional)"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                onchange="updateCourse(${semester.id}, ${course.id}, 'name', this.value)"
+              />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Credits</label>
+              <input
+                type="number"
+                step="0.5"
+                min="0.5"
+                value="${course.credits}"
+                placeholder="e.g., 3"
+                class="w-full px-3 py-2 border ${hasError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                onchange="updateCourse(${semester.id}, ${course.id}, 'credits', this.value)"
+                aria-invalid="${hasError ? 'true' : 'false'}"
+              />
+              ${hasError ? `<p class="text-red-500 text-xs mt-1">${state.errors[errorKey]}</p>` : ''}
+            </div>
+            <div class="md:col-span-3">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Grade</label>
+              <select
+                class="grade-select w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                onchange="updateCourse(${semester.id}, ${course.id}, 'grade', this.value)"
+                aria-label="Grade (select)"
+              >
+                <option value="">Select grade</option>
+                ${GRADE_OPTIONS.map(grade => `
+                  <option value="${grade}" ${course.grade === grade ? 'selected' : ''}>
+                    ${grade} (${GRADE_POLICY[grade].toFixed(2)})
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+            <div class="md:col-span-2 flex items-end">
+              <button
+                onclick="deleteCourse(${semester.id}, ${course.id})"
+                class="w-full md:w-auto px-4 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors font-medium"
+                aria-label="Delete course"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       `;
-      
-      // Event Listeners
-      const nameInput = card.querySelector('.semester-name-input');
-      nameInput.addEventListener('blur', () => updateSemesterName(semester.id, nameInput.value));
-      nameInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') nameInput.blur();
-      });
-      
-      const deleteBtn = card.querySelector('.delete-semester-btn');
-      const deleteConfirm = card.querySelector('.delete-confirm');
-      const confirmDeleteBtn = card.querySelector('.confirm-delete-btn');
-      const cancelDeleteBtn = card.querySelector('.cancel-delete-btn');
-      
-      deleteBtn.addEventListener('click', () => {
-        deleteConfirm.classList.remove('hidden');
-      });
-      
-      cancelDeleteBtn.addEventListener('click', () => {
-        deleteConfirm.classList.add('hidden');
-      });
-      
-      confirmDeleteBtn.addEventListener('click', () => deleteSemester(semester.id));
-      
-      const addCourseBtn = card.querySelector('.add-course-btn');
-      addCourseBtn.addEventListener('click', () => addCourse(semester.id, semester.name));
-      
-      // Course event listeners
-      attachCourseEventListeners(card);
-      
-      return card;
     }
-    
-    function updateSemesterCard(card, semester, cgpa, totalCredits) {
-      card.querySelector('.semester-cgpa').textContent = cgpa.toFixed(2);
-      card.querySelector('.semester-credits').textContent = totalCredits;
-      
-      const coursesContainer = card.querySelector('.courses-container');
-      const existingCourseRows = new Map([...coursesContainer.children].map(el => [el.dataset.courseId, el]));
-      
-      semester.courses.forEach(course => {
-        if (existingCourseRows.has(course.__backendId)) {
-          // Update existing row
-          const row = existingCourseRows.get(course.__backendId);
-          updateCourseRow(row, course);
-          existingCourseRows.delete(course.__backendId);
-        } else {
-          // Create new row
-          const row = document.createElement('div');
-          row.innerHTML = createCourseRowHTML(course);
-          const newRow = row.firstElementChild;
-          coursesContainer.appendChild(newRow);
-          attachCourseEventListenersToRow(newRow);
-        }
-      });
-      
-      // Remove deleted courses
-      existingCourseRows.forEach(row => row.remove());
-    }
-    
-    function createCourseRowHTML(course) {
+
+    function createSemesterPanel(semester, index) {
+      const semesterGPA = calculateSemesterGPA(semester.courses);
+      const hasValidCourses = semester.courses.some(c => c.credits > 0 && c.grade);
+
       return `
-        <div class="course-row clickable rounded-xl p-4 flex flex-wrap items-center gap-3 fade-in" data-course-id="${course.__backendId}">
-          <input type="text" 
-                 class="course-name-input input-field flex-1 min-w-[150px] px-3 py-2 rounded-lg text-slate-800 outline-none transition-all"
-                 value="${escapeHtml(course.course_name)}"
-                 placeholder="Course Name">
-          
-          <select class="grade-select input-field px-3 py-2 rounded-lg text-slate-800 outline-none transition-all cursor-pointer">
-            <option value="">Grade</option>
-            ${Object.keys(gradePoints).map(g => `<option value="${g}" ${course.grade === g ? 'selected' : ''}>${g} (${gradePoints[g].toFixed(2)})</option>`).join('')}
-          </select>
-          
-          <input type="number" 
-                 class="credit-input input-field w-28 px-3 py-2 rounded-lg text-slate-800 text-center outline-none transition-all"
-                 value="${course.credit_hours || ''}"
-                 placeholder="Credit"
-                 min="0"
-                 max="10"
-                 step="0.5">
-          
-          <div class="grade-points mono text-lg font-semibold text-indigo-400 w-16 text-center">
-            ${(getGradePoint(course.grade) * (course.credit_hours || 0)).toFixed(2)}
+        <div class="bg-gray-50 rounded-xl p-6 shadow-sm border border-gray-200 animate-slide-in">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <h2 class="text-xl font-semibold" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.25}px;">
+                ${semester.name}
+              </h2>
+              ${semesterGPA ? `
+                <span class="tooltip px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold" data-tooltip="Exact: ${semesterGPA}">
+                  GPA: ${semesterGPA.toFixed(2)}
+                </span>
+              ` : ''}
+            </div>
+            ${state.semesters.length > 1 ? `
+              <button
+                onclick="deleteSemester(${semester.id})"
+                class="px-3 py-1 text-red-600 hover:bg-red-50 rounded-md transition-colors text-sm font-medium"
+                aria-label="Delete semester"
+              >
+                Delete Semester
+              </button>
+            ` : ''}
           </div>
-          
-          <button class="delete-course-btn p-2 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 transition-all" title="Delete Course">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+
+          <div class="space-y-3 mb-4">
+            ${semester.courses.length > 0 ? 
+              semester.courses.map(course => createCourseRow(semester, course)).join('') :
+              `<div class="text-center py-8 text-gray-500">
+                <p style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">No courses yet — click '${config.add_course_button || defaultConfig.add_course_button}' to start.</p>
+              </div>`
+            }
+          </div>
+
+          <button
+            onclick="addCourse(${semester.id})"
+            class="w-full py-2 rounded-md font-medium transition-all hover:shadow-md"
+            style="background-color: ${config.primary_color || defaultConfig.primary_color}; color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+            onmouseover="this.style.opacity='0.9'"
+            onmouseout="this.style.opacity='1'"
+          >
+            ${config.add_course_button || defaultConfig.add_course_button}
           </button>
         </div>
       `;
     }
-    
-    function updateCourseRow(row, course) {
-      const nameInput = row.querySelector('.course-name-input');
-      const gradeSelect = row.querySelector('.grade-select');
-      const creditInput = row.querySelector('.credit-input');
-      const gradePointsDisplay = row.querySelector('.grade-points');
-      
-      if (nameInput.value !== course.course_name && document.activeElement !== nameInput) {
-        nameInput.value = course.course_name;
-      }
-      if (gradeSelect.value !== course.grade && document.activeElement !== gradeSelect) {
-        gradeSelect.value = course.grade;
-      }
-      if (parseFloat(creditInput.value) !== course.credit_hours && document.activeElement !== creditInput) {
-        creditInput.value = course.credit_hours || '';
-      }
-      
-      gradePointsDisplay.textContent = (getGradePoint(course.grade) * (course.credit_hours || 0)).toFixed(2);
+
+    function createResultsCard() {
+      const cgpa = calculateCGPA();
+      const totalCourses = state.semesters.reduce((sum, s) => sum + s.courses.filter(c => c.credits > 0 && c.grade).length, 0);
+      const totalCredits = state.semesters.reduce((sum, s) => {
+        return sum + s.courses.reduce((cSum, c) => c.credits > 0 && c.grade ? cSum + c.credits : cSum, 0);
+      }, 0);
+
+      return `
+        <div class="rounded-xl p-8 shadow-lg border border-gray-200 animate-fade-in" style="background-color: ${config.surface_color || defaultConfig.surface_color};">
+          <div class="text-center">
+            <h3 class="text-lg font-semibold mb-2" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.125}px;">
+              Cumulative CGPA
+            </h3>
+            ${cgpa ? `
+              <div class="tooltip" data-tooltip="Exact: ${cgpa}">
+                <div class="text-6xl font-bold mb-4" style="color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+                  ${cgpa.toFixed(2)}
+                </div>
+              </div>
+            ` : `
+              <div class="text-4xl font-bold mb-4" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.3; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+                N/A
+              </div>
+            `}
+            <div class="grid grid-cols-2 gap-4 mt-6">
+              <div class="text-center p-4 rounded-lg" style="background-color: ${config.secondary_color || defaultConfig.secondary_color};">
+                <div class="text-2xl font-bold" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+                  ${totalCourses}
+                </div>
+                <div class="text-sm" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.7; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
+                  Courses
+                </div>
+              </div>
+              <div class="text-center p-4 rounded-lg" style="background-color: ${config.secondary_color || defaultConfig.secondary_color};">
+                <div class="text-2xl font-bold" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+                  ${totalCredits.toFixed(1)}
+                </div>
+                <div class="text-sm" style="color: ${config.text_color || defaultConfig.text_color}; opacity: 0.7; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
+                  Credits
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
-    
-    function attachCourseEventListeners(card) {
-      card.querySelectorAll('.course-row').forEach(row => {
-        attachCourseEventListenersToRow(row);
-      });
+
+    function createExportModal() {
+      if (!state.showExportModal) return '';
+
+      return `
+        <div class="export-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in" onclick="if(event.target === this) { state.showExportModal = false; render(); }">
+          <div class="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl" onclick="event.stopPropagation()">
+            <h3 class="text-xl font-bold mb-4" style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.25}px;">
+              Export Options
+            </h3>
+            <div class="space-y-3">
+              <button
+                onclick="exportToCSV(); state.showExportModal = false; render();"
+                class="w-full py-3 px-4 rounded-lg font-medium transition-all hover:shadow-md text-left flex items-center gap-3"
+                style="background-color: ${config.primary_color || defaultConfig.primary_color}; color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+                onmouseover="this.style.opacity='0.9'"
+                onmouseout="this.style.opacity='1'"
+              >
+                <span>📄</span>
+                <div>
+                  <div>Export as CSV</div>
+                  <div class="text-sm opacity-80">Download spreadsheet file</div>
+                </div>
+              </button>
+              <button
+                onclick="exportToPDF(); state.showExportModal = false; render();"
+                class="w-full py-3 px-4 rounded-lg font-medium transition-all hover:shadow-md text-left flex items-center gap-3"
+                style="background-color: ${config.accent_color || defaultConfig.accent_color}; color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+                onmouseover="this.style.opacity='0.9'"
+                onmouseout="this.style.opacity='1'"
+              >
+                <span>📑</span>
+                <div>
+                  <div>Export as PDF</div>
+                  <div class="text-sm opacity-80">Print or save as PDF</div>
+                </div>
+              </button>
+              <button
+                onclick="importFromCSV()"
+                class="w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-all text-left flex items-center gap-3"
+                style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+              >
+                <span>📥</span>
+                <div>
+                  <div>Import from CSV</div>
+                  <div class="text-sm opacity-70">Load existing transcript</div>
+                </div>
+              </button>
+            </div>
+            <button
+              onclick="state.showExportModal = false; render();"
+              class="w-full mt-4 py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors"
+              style="color: ${config.text_color || defaultConfig.text_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      `;
     }
-    
-    function attachCourseEventListenersToRow(row) {
-      const courseId = row.dataset.courseId;
-      
-      const nameInput = row.querySelector('.course-name-input');
-      const gradeSelect = row.querySelector('.grade-select');
-      const creditInput = row.querySelector('.credit-input');
-      const deleteBtn = row.querySelector('.delete-course-btn');
-      
-      nameInput.addEventListener('blur', () => updateCourseField(courseId, 'course_name', nameInput.value));
-      nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') nameInput.blur(); });
-      
-      gradeSelect.addEventListener('change', () => {
-        updateCourseField(courseId, 'grade', gradeSelect.value);
-        updateGradePointsDisplay(row, gradeSelect.value, parseFloat(creditInput.value) || 0);
-      });
-      
-      creditInput.addEventListener('blur', () => {
-        const value = parseFloat(creditInput.value) || 0;
-        updateCourseField(courseId, 'credit_hours', value);
-        updateGradePointsDisplay(row, gradeSelect.value, value);
-      });
-      creditInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') creditInput.blur(); });
-      
-      deleteBtn.addEventListener('click', () => deleteCourse(courseId));
+
+    function render() {
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="min-h-full w-full" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif;">
+          <div class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+              <h1 class="text-4xl font-bold text-white mb-2" style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 2.5}px;">
+                ${config.app_title || defaultConfig.app_title}
+              </h1>
+              <p class="text-blue-100" style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 1.125}px;">
+                ${config.app_subtitle || defaultConfig.app_subtitle}
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Main Content -->
+              <div class="lg:col-span-2 space-y-6">
+                ${state.semesters.map((semester, index) => createSemesterPanel(semester, index)).join('')}
+                
+                <div class="flex gap-3">
+                  <button
+                    onclick="addSemester()"
+                    class="flex-1 py-3 rounded-lg font-medium transition-all hover:shadow-lg"
+                    style="background-color: ${config.surface_color || defaultConfig.surface_color}; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+                  >
+                    ${config.add_semester_button || defaultConfig.add_semester_button}
+                  </button>
+                  <button
+                    onclick="state.showExportModal = true; render();"
+                    class="px-6 py-3 rounded-lg font-medium transition-all hover:shadow-lg"
+                    style="background-color: ${config.accent_color || defaultConfig.accent_color}; color: white; font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size)}px;"
+                    onmouseover="this.style.opacity='0.9'"
+                    onmouseout="this.style.opacity='1'"
+                  >
+                    ${config.export_button || defaultConfig.export_button}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Sidebar -->
+              <div class="lg:col-span-1">
+                <div class="sticky top-8">
+                  ${createResultsCard()}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          ${createExportModal()}
+
+          <!-- Footer Credit -->
+          <div class="text-center py-6">
+            <p class="text-white text-sm opacity-75" style="font-family: ${config.font_family || defaultConfig.font_family}, -apple-system, sans-serif; font-size: ${(config.font_size || defaultConfig.font_size) * 0.875}px;">
+              Designed by S & A
+            </p>
+          </div>
+        </div>
+      `;
     }
-    
-    function updateGradePointsDisplay(row, grade, credits) {
-      const gradePointsDisplay = row.querySelector('.grade-points');
-      gradePointsDisplay.textContent = (getGradePoint(grade) * credits).toFixed(2);
+
+    // Element SDK implementation
+    async function onConfigChange(newConfig) {
+      Object.assign(config, newConfig);
+      render();
     }
-    
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-    
-    // Data Operations
-    async function addSemester() {
-      if (isLoading) return;
-      if (allCourses.length >= 999) {
-        showToast('Maximum limit of 999 courses reached', 'error');
-        return;
-      }
-      
-      showLoading(true);
-      const semesterId = generateId();
-      const semesterNumber = semesters.size + 1;
-      
-      const result = await window.dataSdk.create({
-        semester_id: semesterId,
-        semester_name: `Semester ${semesterNumber}`,
-        course_name: '',
-        grade: '',
-        credit_hours: 0,
-        created_at: new Date().toISOString()
-      });
-      
-      showLoading(false);
-      
-      if (result.isOk) {
-        showToast('Semester added successfully');
-      } else {
-        showToast('Failed to add semester', 'error');
-      }
-    }
-    
-    async function addCourse(semesterId, semesterName) {
-      if (isLoading) return;
-      if (allCourses.length >= 999) {
-        showToast('Maximum limit of 999 courses reached', 'error');
-        return;
-      }
-      
-      showLoading(true);
-      
-      const result = await window.dataSdk.create({
-        semester_id: semesterId,
-        semester_name: semesterName,
-        course_name: '',
-        grade: '',
-        credit_hours: 0,
-        created_at: new Date().toISOString()
-      });
-      
-      showLoading(false);
-      
-      if (result.isOk) {
-        showToast('Course added');
-      } else {
-        showToast('Failed to add course', 'error');
-      }
-    }
-    
-    async function updateCourseField(courseId, field, value) {
-      if (isLoading) return;
-      
-      const course = allCourses.find(c => c.__backendId === courseId);
-      if (!course) return;
-      
-      const updatedCourse = { ...course, [field]: value };
-      
-      const result = await window.dataSdk.update(updatedCourse);
-      
-      if (!result.isOk) {
-        showToast('Failed to update course', 'error');
-      }
-    }
-    
-    async function updateSemesterName(semesterId, newName) {
-      if (isLoading) return;
-      
-      const semesterCourses = allCourses.filter(c => c.semester_id === semesterId);
-      
-      for (const course of semesterCourses) {
-        if (course.semester_name !== newName) {
-          await window.dataSdk.update({ ...course, semester_name: newName });
-        }
-      }
-    }
-    
-    async function deleteCourse(courseId) {
-      if (isLoading) return;
-      
-      const course = allCourses.find(c => c.__backendId === courseId);
-      if (!course) return;
-      
-      showLoading(true);
-      const result = await window.dataSdk.delete(course);
-      showLoading(false);
-      
-      if (result.isOk) {
-        showToast('Course deleted');
-      } else {
-        showToast('Failed to delete course', 'error');
-      }
-    }
-    
-    async function deleteSemester(semesterId) {
-      if (isLoading) return;
-      
-      const semesterCourses = allCourses.filter(c => c.semester_id === semesterId);
-      
-      showLoading(true);
-      
-      for (const course of semesterCourses) {
-        await window.dataSdk.delete(course);
-      }
-      
-      showLoading(false);
-      showToast('Semester deleted');
-    }
-    
-    async function clearAllData() {
-      if (isLoading) return;
-      
-      showLoading(true);
-      
-      // Delete all courses except those in Semester 1
-      for (const course of allCourses) {
-        if (course.semester_name !== 'Semester 1') {
-          await window.dataSdk.delete(course);
-        }
-      }
-      
-      // Clear all courses in Semester 1 (keep the semester but empty it)
-      const semester1Courses = allCourses.filter(c => c.semester_name === 'Semester 1');
-      for (const course of semester1Courses) {
-        if (course.course_name !== '' || course.grade !== '' || course.credit_hours !== 0) {
-          await window.dataSdk.update({
-            ...course,
-            course_name: '',
-            grade: '',
-            credit_hours: 0
-          });
-        }
-      }
-      
-      showLoading(false);
-      showToast('All data cleared');
-    }
-    
-    // Data Handler
-    const dataHandler = {
-      onDataChanged(data) {
-        allCourses = data;
-        ensureSemester1Exists();
-        renderSemesters();
-      }
-    };
-    
-    // Ensure Semester 1 always exists
-    async function ensureSemester1Exists() {
-      const hasSemester1 = allCourses.some(c => c.semester_name === 'Semester 1');
-      
-      if (!hasSemester1 && !isLoading) {
-        const semesterId = 'semester-1-' + generateId();
-        
-        const result = await window.dataSdk.create({
-          semester_id: semesterId,
-          semester_name: 'Semester 1',
-          course_name: '',
-          grade: '',
-          credit_hours: 0,
-          created_at: new Date().toISOString()
-        });
-        
-        if (!result.isOk) {
-          showToast('Failed to create Semester 1', 'error');
-        }
-      }
-    }
-    
-    // Element SDK Config Change Handler
-    async function onConfigChange(config) {
-      const title = config.app_title || defaultConfig.app_title;
-      const subtitle = config.subtitle || defaultConfig.subtitle;
-      const bgColor = config.background_color || defaultConfig.background_color;
-      const surfaceColor = config.surface_color || defaultConfig.surface_color;
-      const textColor = config.text_color || defaultConfig.text_color;
-      const primaryColor = config.primary_action || defaultConfig.primary_action;
-      const secondaryColor = config.secondary_action || defaultConfig.secondary_action;
-      const fontFamily = config.font_family || defaultConfig.font_family;
-      const fontSize = config.font_size || defaultConfig.font_size;
-      
-      document.getElementById('app-title').textContent = title;
-      document.getElementById('app-subtitle').textContent = subtitle;
-      
-      document.body.style.fontFamily = `${fontFamily}, Space Grotesk, sans-serif`;
-      document.body.style.fontSize = `${fontSize}px`;
-      
-      document.documentElement.style.setProperty('--bg-color', bgColor);
-      document.documentElement.style.setProperty('--surface-color', surfaceColor);
-      document.documentElement.style.setProperty('--text-color', textColor);
-      document.documentElement.style.setProperty('--primary-color', primaryColor);
-      document.documentElement.style.setProperty('--secondary-color', secondaryColor);
-    }
-    
-    // Initialize
-    async function init() {
-      // Initialize Element SDK
-      if (window.elementSdk) {
-        window.elementSdk.init({
-          defaultConfig,
-          onConfigChange,
-          mapToCapabilities: (config) => ({
-            recolorables: [
-              {
-                get: () => config.background_color || defaultConfig.background_color,
-                set: (value) => { config.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
-              },
-              {
-                get: () => config.surface_color || defaultConfig.surface_color,
-                set: (value) => { config.surface_color = value; window.elementSdk.setConfig({ surface_color: value }); }
-              },
-              {
-                get: () => config.text_color || defaultConfig.text_color,
-                set: (value) => { config.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
-              },
-              {
-                get: () => config.primary_action || defaultConfig.primary_action,
-                set: (value) => { config.primary_action = value; window.elementSdk.setConfig({ primary_action: value }); }
-              },
-              {
-                get: () => config.secondary_action || defaultConfig.secondary_action,
-                set: (value) => { config.secondary_action = value; window.elementSdk.setConfig({ secondary_action: value }); }
-              }
-            ],
-            borderables: [],
-            fontEditable: {
-              get: () => config.font_family || defaultConfig.font_family,
-              set: (value) => { config.font_family = value; window.elementSdk.setConfig({ font_family: value }); }
-            },
-            fontSizeable: {
-              get: () => config.font_size || defaultConfig.font_size,
-              set: (value) => { config.font_size = value; window.elementSdk.setConfig({ font_size: value }); }
+
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [
+          {
+            get: () => cfg.primary_color || defaultConfig.primary_color,
+            set: (value) => {
+              cfg.primary_color = value;
+              window.elementSdk.setConfig({ primary_color: value });
             }
-          }),
-          mapToEditPanelValues: (config) => new Map([
-            ['app_title', config.app_title || defaultConfig.app_title],
-            ['subtitle', config.subtitle || defaultConfig.subtitle]
-          ])
-        });
-      }
-      
-      // Initialize Data SDK
-      if (window.dataSdk) {
-        const result = await window.dataSdk.init(dataHandler);
-        if (!result.isOk) {
-          showToast('Failed to initialize data storage', 'error');
+          },
+          {
+            get: () => cfg.secondary_color || defaultConfig.secondary_color,
+            set: (value) => {
+              cfg.secondary_color = value;
+              window.elementSdk.setConfig({ secondary_color: value });
+            }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (value) => {
+              cfg.text_color = value;
+              window.elementSdk.setConfig({ text_color: value });
+            }
+          },
+          {
+            get: () => cfg.surface_color || defaultConfig.surface_color,
+            set: (value) => {
+              cfg.surface_color = value;
+              window.elementSdk.setConfig({ surface_color: value });
+            }
+          },
+          {
+            get: () => cfg.accent_color || defaultConfig.accent_color,
+            set: (value) => {
+              cfg.accent_color = value;
+              window.elementSdk.setConfig({ accent_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => cfg.font_family || defaultConfig.font_family,
+          set: (value) => {
+            cfg.font_family = value;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => cfg.font_size || defaultConfig.font_size,
+          set: (value) => {
+            cfg.font_size = value;
+            window.elementSdk.setConfig({ font_size: value });
+          }
         }
-      }
-      
-      // Add Semester Button
-      document.getElementById('add-semester-btn').addEventListener('click', addSemester);
-      
-      // Clear All Button & Modal
-      const clearAllBtn = document.getElementById('clear-all-btn');
-      const clearAllModal = document.getElementById('clear-all-modal');
-      const confirmClearAllBtn = document.getElementById('confirm-clear-all-btn');
-      const cancelClearAllBtn = document.getElementById('cancel-clear-all-btn');
-      
-      clearAllBtn.addEventListener('click', () => {
-        clearAllModal.classList.remove('hidden');
-      });
-      
-      cancelClearAllBtn.addEventListener('click', () => {
-        clearAllModal.classList.add('hidden');
-      });
-      
-      confirmClearAllBtn.addEventListener('click', async () => {
-        clearAllModal.classList.add('hidden');
-        await clearAllData();
-      });
-      
-      // Close modal on background click
-      clearAllModal.addEventListener('click', (e) => {
-        if (e.target === clearAllModal) {
-          clearAllModal.classList.add('hidden');
-        }
-      });
-      
-      updateOverallStats();
+      };
     }
-    
-    init();
+
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ['app_title', cfg.app_title || defaultConfig.app_title],
+        ['app_subtitle', cfg.app_subtitle || defaultConfig.app_subtitle],
+        ['add_course_button', cfg.add_course_button || defaultConfig.add_course_button],
+        ['add_semester_button', cfg.add_semester_button || defaultConfig.add_semester_button],
+        ['export_button', cfg.export_button || defaultConfig.export_button]
+      ]);
+    }
+
+    // Initialize
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+      config = window.elementSdk.config;
+    }
+
+    loadFromStorage();
+    render();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bdf6921740c25b1',t:'MTc2ODQxNzU4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9be006b3443525b1',t:'MTc2ODQyNDA0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
